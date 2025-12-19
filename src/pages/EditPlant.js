@@ -12,6 +12,9 @@ function EditPlant() {
   const [fertilizingFrequency, setFertilizingFrequency] = useState('');
   const [image, setImage] = useState('');
   const [notes, setNotes] = useState('');
+  // NEW: allow editing last watered / last fertilized dates
+  const [lastWatered, setLastWatered] = useState('');
+  const [lastFertilized, setLastFertilized] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +44,13 @@ function EditPlant() {
         setFertilizingFrequency(data.fertilizingFrequency);
         setImage(data.image || '');
         setNotes(data.notes || '');
+        // NEW: prefill dates if present (format to yyyy-mm-dd for date input)
+        if (data.lastWatered) {
+          setLastWatered(new Date(data.lastWatered).toISOString().slice(0,10));
+        }
+        if (data.lastFertilized) {
+          setLastFertilized(new Date(data.lastFertilized).toISOString().slice(0,10));
+        }
       }
     } catch (err) {
       console.log('Error fetching plant:', err);
@@ -63,7 +73,10 @@ function EditPlant() {
         wateringFrequency: Number(wateringFrequency),
         fertilizingFrequency: Number(fertilizingFrequency),
         image,
-        notes
+        notes,
+        // NEW: send updated lastWatered / lastFertilized
+        lastWatered: lastWatered || null,
+        lastFertilized: lastFertilized || null
       };
 
       // Call API to update plant
@@ -156,6 +169,26 @@ function EditPlant() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows="4"
+            />
+          </div>
+
+          {/* NEW: Last Watered */}
+          <div className="form-group">
+            <label>Last Watered Date</label>
+            <input
+              type="date"
+              value={lastWatered}
+              onChange={(e) => setLastWatered(e.target.value)}
+            />
+          </div>
+          
+          {/* NEW: Last Fertilized */}
+          <div className="form-group">
+            <label>Last Fertilized Date</label>
+            <input
+              type="date"
+              value={lastFertilized}
+              onChange={(e) => setLastFertilized(e.target.value)}
             />
           </div>
 
